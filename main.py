@@ -38,45 +38,62 @@ def text_to_vector(text):
     return Counter(words)
 
 
-ARCHIVE = csv.reader(open("bd.csv", "r"))
+ARCHIVE = csv.reader(open("bd.csv", "r"), delimiter=';')
 A_SPLIT = []
 for row in ARCHIVE:
     #print(row)
-    a = [row[0], row[1]]
+    a = [row[0], row[1], row[2], row[3]]
     A_SPLIT.append(a)
 
-ARCHIVE = csv.reader(open("bd_t.csv", "r"))
-B_SPLIT = []
-for row in ARCHIVE:
-    #print(row)
-    b = [row[0], row[1]]
-    B_SPLIT.append(b)
-
-#print(a_split)
 def processa_pergunta(sentence):
     '''
     testar
     '''
     resposta = 'Não sei'
-    value = 0.0
+    value_cosine = 0.0
+    value_feedback = 0
     vector1 = text_to_vector(sentence)
-
-    ## Saudações
-    for i in enumerate(B_SPLIT):
-        #print(a_split[i][0])
-        if sentence.lower() == B_SPLIT[i[0]][0].lower():
-            return B_SPLIT[i[0]][1]
     for i in enumerate(A_SPLIT):
-        vector2 = text_to_vector(A_SPLIT[i[0]][0])
+        if int(A_SPLIT[i[0]][3]) < 0:
+            continue
+        vector2 = text_to_vector(A_SPLIT[i[0]][0].lower())
         cosine = get_cosine(vector1, vector2)
-        if cosine > 0.40 and cosine > value:
-            value = cosine
-            resposta = A_SPLIT[i[0]][1]
+       # print(cosine)
+        if cosine > 0.40 and cosine > value_cosine:
+            value_cosine = cosine
+            value_feedback = int(A_SPLIT[i[0]][3])
+            resposta = A_SPLIT[i[0]][2]
+        elif cosine == value_cosine and value_feedback < int(A_SPLIT[i[0]][3]):
+            value_cosine = cosine
+            value_feedback = int(A_SPLIT[i[0]][3])
+            resposta = A_SPLIT[i[0]][2]
     return resposta
 
+SENTENCES = []
 while True:
-    SENTENCE = input()
+    SENTENCE = input('User: ')
+    SENTENCES.append(SENTENCE)
     if SENTENCE.lower() == 'tchau':
         break
-    print(processa_pergunta(SENTENCE))
+    elif SENTENCE.lower() == '*0':
+        for i in enumerate(A_SPLIT):
+            if A_SPLIT[i[0]][2] == SENTENCES[len(SENTENCES) - 2]:
+                A_SPLIT[i[0]][3] = int(A_SPLIT[i[0]][3]) - 1
+        print('Obrigado pelo Feedback!')
+    elif SENTENCE.lower() == '*1':
+        for i in enumerate(A_SPLIT):
+            if A_SPLIT[i[0]][2] == SENTENCES[len(SENTENCES) - 2]:
+                A_SPLIT[i[0]][3] = int(A_SPLIT[i[0]][3]) + 1
+        print('Obrigado pelo Feedback!')
+    elif SENTENCE.lower() in ['ajuda', 'versão']:
+        print('Execução de comando')
+    else:
+        PROCESS = processa_pergunta(SENTENCE.lower())
+        SENTENCES.append(PROCESS)
+        print(PROCESS)
 print('Bye!!!!')
+with open('bd.csv', 'w', newline='') as csvfile:
+    WRITER = csv.writer(csvfile, delimiter=';',
+                        quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    for j in enumerate(A_SPLIT):
+        WRITER.writerow(A_SPLIT[j[0]])

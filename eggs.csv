@@ -4,8 +4,8 @@ Tudo bem?;Conversa;Sim e com você?;1
 Tudo otimo;Conversa;Que bom!!;1
 Obrigado!;Conversa;Disponha :);1
 Pode me ajudar?;Conversa;Sim diga o que deseja;1
-sobre criptografia de ponta-a-ponta;Geral;A criptografia de ponta-a-ponta do WhatsApp assegura que somente você e a pessoa com que você está se comunicando podem ler o que é enviado e ninguém mais nem mesmo o WhatsApp. ;1
+sobre criptografia de ponta-a-ponta;Geral;A criptografia de ponta-a-ponta do WhatsApp assegura que somente você e a pessoa com que você está se comunicando podem ler o que é enviado e ninguém mais nem mesmo o WhatsApp. ;0
 ativar a criptografia de ponta-a-ponta;Geral;A criptografia de ponta-a-ponta está sempre ativada desde que todos os envolvidos estejam usando a versão mais recente do WhatsApp.;1
-desativar a criptografia de ponta-a-ponta;Geral;Não há nenhuma maneira de desativar a criptografia de ponta-a-ponta. ;2
+desativar a criptografia de ponta-a-ponta;Geral;Não há nenhuma maneira de desativar a criptografia de ponta-a-ponta. ;1
 o que é a tela para "Confirmar código de segurança" na tela de dados de um contato?;Geral;Cada uma de suas conversas possui seu próprio código de segurança para confirmar que as chamadas que você efetuar e as mensagens que você enviar estarão criptografadas de ponta-a-ponta em cada uma delas. Atenção: O processo de confirmação é opcional e é somente usado para de fato confirmar que as mensagens que você envia estão criptografadas de ponta-a-ponta. Este código pode ser encontrado na tela de dados do contato;1
 confirmar que uma conversa é criptografada de ponta-a-ponta;Geral;Abra a conversa.\nToque no nome do contato para abrir a tela de dados.\nToque em Criptografia para ver o código QR e o código de 60 dígitos. ;1
