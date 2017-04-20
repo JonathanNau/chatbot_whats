@@ -5,8 +5,6 @@ Created on Thu Apr  6 19:21:10 2017
 
 @author: jonathan
 """
-## Lematizar Analise sematica
-
 import csv
 import re
 import math
@@ -14,7 +12,6 @@ from collections import Counter
 from nltk.stem.snowball import SnowballStemmer
 
 WORD = re.compile(r'\w+')
-
 
 def get_cosine(vec1, vec2):
     '''
@@ -78,7 +75,7 @@ def processa_pergunta(sentence, APARELHO):
         print('Encontramos uma resposta, mas precisamos confirmar seu aparelho')
         print('Por acaso seu aparelho é ' + categoria + '?')
         answer = input('User: ')
-        if answer.lower() in ['s', 'sim', 'yes']:
+        if answer.lower() in ['s', 'sim', 'yes', 'y']:
             APARELHO.clear()
             APARELHO.append(categoria)
             return resposta
