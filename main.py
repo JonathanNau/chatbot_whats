@@ -10,6 +10,7 @@ import re
 import math
 from collections import Counter
 from nltk.stem.snowball import SnowballStemmer
+from subprocess import check_output
 
 WORD = re.compile(r'\w+')
 
@@ -47,7 +48,6 @@ for row in ARCHIVE:
 
 def processa_pergunta(sentence, APARELHO):
     '''
-    testar
     '''
     sentence = ' '.join([STEMMER.stem(i) for i in sentence.split()])
     resposta = 'Não sei'
@@ -55,7 +55,7 @@ def processa_pergunta(sentence, APARELHO):
     value_feedback = 0
     categoria = 'geral'
     vector1 = text_to_vector(sentence)
-    cat = ['geral', 'conversa']+APARELHO
+    cat = ['geral', 'conversa', 'comando']+APARELHO
     for i in enumerate(A_SPLIT):
         if int(A_SPLIT[i[0]][3]) < 0 or A_SPLIT[i[0]][1].lower() not in cat:
             continue
@@ -71,7 +71,7 @@ def processa_pergunta(sentence, APARELHO):
             value_feedback = int(A_SPLIT[i[0]][3])
             resposta = A_SPLIT[i[0]][2]
             categoria = A_SPLIT[i[0]][1].lower()
-    if len(APARELHO) > 1 and categoria not in ['geral', 'conversa']:
+    if len(APARELHO) > 1 and categoria not in ['geral', 'conversa', 'comando']:
         print('Encontramos uma resposta, mas precisamos confirmar seu aparelho')
         print('Por acaso seu aparelho é ' + categoria + '?')
         answer = input('User: ')
@@ -81,10 +81,13 @@ def processa_pergunta(sentence, APARELHO):
             return resposta
         else:
             APARELHO.remove(categoria)
-            print(APARELHO)
+            #print(APARELHO)
             return processa_pergunta(sentence, APARELHO)
     else:
-        return resposta
+        if categoria == 'comando':
+            return check_output(resposta, shell=True).decode("utf-8").rstrip()
+        else:
+            return resposta
 
 SENTENCES = []
 APARELHO = ['android', 'iphone']
