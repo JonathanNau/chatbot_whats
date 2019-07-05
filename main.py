@@ -8,6 +8,7 @@ Created on Thu Apr  6 19:21:10 2017
 import csv
 import re
 import math
+from respostasModel import respostasModel
 from collections import Counter
 from nltk.stem.snowball import SnowballStemmer
 from subprocess import check_output
@@ -39,81 +40,75 @@ def text_to_vector(text):
 
 
 ARCHIVE = csv.reader(open("bd.csv", "r"), delimiter=';')
-A_SPLIT = []
+grupoDeRespostas = []
 STEMMER = SnowballStemmer("portuguese")
+
 for row in ARCHIVE:
     #print(row)
-    a = [' '.join([STEMMER.stem(i) for i in row[0].split()]), row[1], row[2], row[3]]
-    A_SPLIT.append(a)
+    resposta = respostasModel(' '.join([STEMMER.stem(i) for i in row[0].split()]), row[1], row[2], row[3])
+    grupoDeRespostas.append(resposta)
 
 def processa_pergunta(sentence, APARELHO):
     '''
     '''
     sentence = ' '.join([STEMMER.stem(i) for i in sentence.split()])
-    resposta = 'Não sei'
+    respostaParaUsuario = 'Não sei'
     value_cosine = 0.0
-    value_feedback = 0
+    maiorValorDeFeedback = 0
     categoria = 'geral'
     vector1 = text_to_vector(sentence)
-    cat = ['geral', 'conversa', 'comando']+APARELHO
-    for i in enumerate(A_SPLIT):
-        if int(A_SPLIT[i[0]][3]) < 0 or A_SPLIT[i[0]][1].lower() not in cat:
+    categorias = ['geral', 'conversa', 'comando', 'iphone', 'android']
+    
+    for resposta in grupoDeRespostas:
+        if int(resposta.feedback) < 0 or resposta.categoria.lower() not in categorias:
             continue
-        vector2 = text_to_vector(A_SPLIT[i[0]][0].lower())
+        vector2 = text_to_vector(resposta.questao.lower())
         cosine = get_cosine(vector1, vector2)
         if cosine > 0.30 and cosine > value_cosine:
             value_cosine = cosine
-            value_feedback = int(A_SPLIT[i[0]][3])
-            resposta = A_SPLIT[i[0]][2]
-            categoria = A_SPLIT[i[0]][1].lower()
-        elif cosine > 0.0 and cosine == value_cosine and value_feedback < int(A_SPLIT[i[0]][3]):
+            maiorValorDeFeedback = resposta.feedback
+            respostaParaUsuario = resposta.resposta
+            categoria = str(resposta.categoria).lower()
+        elif cosine > 0.0 and cosine == value_cosine and maiorValorDeFeedback < resposta.feedback:
             value_cosine = cosine
-            value_feedback = int(A_SPLIT[i[0]][3])
-            resposta = A_SPLIT[i[0]][2]
-            categoria = A_SPLIT[i[0]][1].lower()
-    if len(APARELHO) > 1 and categoria not in ['geral', 'conversa', 'comando']:
-        print('Encontramos uma resposta, mas precisamos confirmar seu aparelho')
-        print('Por acaso seu aparelho é ' + categoria + '?')
-        answer = input('User: ')
-        if answer.lower() in ['s', 'sim', 'yes', 'y']:
-            APARELHO.clear()
-            APARELHO.append(categoria)
-            return resposta
-        else:
-            APARELHO.remove(categoria)
-            #print(APARELHO)
-            return processa_pergunta(sentence, APARELHO)
+            maiorValorDeFeedback = resposta.feedback
+            respostaParaUsuario = resposta.resposta
+            categoria = str(resposta.categoria).lower()
+    
+    if len(APARELHO) == 0 and categoria not in ['geral', 'conversa', 'comando']:
+        respostaParaUsuario = 'Encontramos uma resposta, mas precisamos confirmar seu aparelho. Por acaso seu aparelho é ' + categoria + '?'
+        categoriaCelular = categoria 
+        return respostaParaUsuario
     else:
         if categoria == 'comando':
-            return check_output(resposta, shell=True).decode("utf-8").rstrip()
+            return check_output(respostaParaUsuario, shell=True).decode("utf-8").rstrip()
         else:
-            return resposta
+            return respostaParaUsuario
 
+categoriaCelular = ''
 SENTENCES = []
-APARELHO = ['android', 'iphone']
-while True:
-    SENTENCE = input('User: ')
+APARELHO = []
+def getResposta(SENTENCE):
     SENTENCES.append(SENTENCE)
-    if SENTENCE.lower() == 'tchau':
-        break
-    elif SENTENCE.lower() == '*0':
-        for i in enumerate(A_SPLIT):
-            if A_SPLIT[i[0]][2] == SENTENCES[len(SENTENCES) - 2]:
-                A_SPLIT[i[0]][3] = int(A_SPLIT[i[0]][3]) - 1
-        print('Obrigado pelo Feedback!')
+    if SENTENCE.lower() in ['s','sim', 'y', 'yes']:
+        APARELHO.append(categoriaCelular)
+        SENTENCE = SENTENCES[-3]
+
+    if SENTENCE.lower() == '*0':
+        for resposta in grupoDeRespostas:
+            if resposta.resposta == SENTENCES[len(SENTENCES) - 2]:
+                resposta.feedback = resposta.feedback - 1
+        return 'Obrigado pelo Feedback!'
     elif SENTENCE.lower() == '*1':
-        for i in enumerate(A_SPLIT):
-            if A_SPLIT[i[0]][2] == SENTENCES[len(SENTENCES) - 2]:
-                A_SPLIT[i[0]][3] = int(A_SPLIT[i[0]][3]) + 1
-        print('Obrigado pelo Feedback!')
+        for resposta in grupoDeRespostas:
+            if resposta.resposta == SENTENCES[len(SENTENCES) - 2]:
+                resposta.feedback = resposta.feedback + 1
+        return 'Obrigado pelo Feedback!'
     elif SENTENCE.lower() in ['ajuda', 'versão']:
-        print('Execução de comando')
+        return 'Execução de comando'
     else:
         PROCESS = processa_pergunta(SENTENCE.lower(), APARELHO)
         SENTENCES.append(PROCESS)
-        print(PROCESS)
-print('Bye!!!!')
-with open('bd.csv', 'w', newline='') as csvfile:
-    WRITER = csv.writer(csvfile, delimiter=';')
-    for j in enumerate(A_SPLIT):
-        WRITER.writerow(A_SPLIT[j[0]])
+        return PROCESS
+
+

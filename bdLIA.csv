@@ -1,0 +1,21 @@
+olá;Conversa;Oi;1
+oi;Conversa;Olá;1
+tud bem?;Conversa;Sim e com você?;1
+tud otim;Conversa;Que bom!!;1
+obrigado!;Conversa;Disponha :);1
+pod me ajudar?;Conversa;Sim diga o que deseja;1
+que dia é hoje;comando;date +%d;1
+que mês é hoje;comando;date +%m;1
+que ano é hoje;comando;date +%Y;1
+qual a data de hoje;comando;date +%d/%m/%Y;1
+que horas são;comando;date +%X;1
+reinicie meu pc;comando;shutdown -r now;1
+Quem é o Jonathan Nau?;Conversa;É um pesquisador do laboratorio;1
+O que é o lia;Conversa;É o laboratorio de inteligencia aplicada;1
+Quais projetos são desenvolvidos no lia;Conversa;Projetos voltadaos a inteligencia artifical, como por exemplo: visão computacinal, processamento de liguagem natural;1
+O que o LIA faz?;Conversa;Projetos voltados a inteligencia artifical, como por exemplo: visão computacinal, processamento de liguagem natural;1
+O que é processamento de liguagem natural?;Conversa;É o processamento da fala e escrita natural do ser humano para que a máquina consiga entender;1
+O que é PLN?;Conversa;É o processamento da fala e escrita natural do ser humano para que a máquina consiga entender;1
+Quem é rudson mendes?;Conversa;Um cara que ama o java;1
+Quem é rodrigo lyra;Conversa;Professor e pesquisador do laboratorio;1
+Quem é joão vitor?;Conversa;Um cara que ama as estrelas;1

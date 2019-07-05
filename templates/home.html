@@ -1,0 +1,13 @@
+<html>
+   <body>
+      <form method = "POST">
+         <p>Qual sua dúvida? <input type = "text" name = "input" /></p>
+         <p><input type = "submit" value = "Enviar" /></p>
+      </form>
+
+      {% if result %}
+      <p>Pergunta: {{result['pergunta']}}</p>
+      <p>Resposta: {{result['resposta']}}</p>
+      {% endif %}
+   </body>
+</html>
